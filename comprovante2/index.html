@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticketmaster - Meus Ingressos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --tm-blue: #0259e3;
+            --tm-dark: #121921;
+            --tm-cyan: #00d3ce;
+            --light-blue: #e1f1f8;
+            --text-gray: #757575;
+            --bg-site: #f4f7f9;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-site);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            width: 100%;
+            background-color: var(--tm-blue);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .tm-logo-nav {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            font-style: italic;
+            letter-spacing: -1px;
+        }
+
+        .nav-event-name {
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        /* --- CONTEÚDO --- */
+        .main-container {
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .welcome-msg {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .welcome-msg h1 {
+            font-size: 22px;
+            color: var(--tm-dark);
+            margin-bottom: 5px;
+        }
+
+        .welcome-msg p {
+            color: var(--text-gray);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* --- CARD DO INGRESSO (O que vira PDF) --- */
+        #ticket-capture-area {
+            background-color: transparent;
+            padding: 10px;
+        }
+
+        .ticket-card {
+            width: 350px;
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .ticket-header {
+            background-color: var(--tm-blue);
+            height: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tm-logo-card {
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            font-style: italic;
+            letter-spacing: -2px;
+        }
+
+        .qr-section {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 3px solid var(--tm-cyan);
+        }
+
+        .qr-code {
+            width: 90px;
+            height: 90px;
+            background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BTS-TOUR-2026-VALID');
+            background-size: cover;
+            margin-right: 15px;
+        }
+
+        .label-small {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-gray);
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .details-section { padding: 20px; }
+
+        .name-display {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .location-highlight {
+            font-size: 17px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: flex;
+            border-top: 1px dotted #ccc;
+            padding-top: 12px;
+        }
+
+        .info-col { flex: 1; }
+
+        .info-value { font-weight: bold; font-size: 15px; color: #000; }
+
+        /* --- SEÇÃO DE AVISOS --- */
+        .alerts-container {
+            width: 100%;
+            background: white;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .alert-item {
+            font-size: 13px;
+            color: #444;
+            margin-bottom: 15px;
+            padding-left: 12px;
+            border-left: 3px solid var(--tm-blue);
+            line-height: 1.5;
+        }
+
+        .alert-item strong {
+            display: block;
+            color: #000;
+            margin-bottom: 2px;
+        }
+
+        /* --- BOTÃO DOWNLOAD --- */
+        .btn-download {
+            margin-top: 25px;
+            width: 100%;
+            padding: 16px;
+            background-color: var(--tm-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+
+        .btn-download:hover {
+            background-color: #0141a8;
+            transform: translateY(-2px);
+        }
+
+        .btn-download svg { fill: white; }
+
+        @media (max-width: 400px) {
+            .ticket-card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+        <div class="tm-logo-nav">ticketmaster</div>
+        <div class="nav-event-name">BTS World Tour - Arirang</div>
+    </nav>
+
+    <div class="main-container">
+        
+        <div class="welcome-msg">
+            <h1>Seu ingresso chegou!</h1>
+            <p>Apresente o QR Code na entrada do evento.</p>
+        </div>
+
+        <div id="ticket-capture-area">
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <div class="tm-logo-card">ticketmaster</div>
+                </div>
+
+                <div class="qr-section">
+                    <div class="qr-code"></div>
+                    <div class="access-info">
+                        <div class="label-small">EVENTO</div>
+                        <div style="font-weight:bold; font-size: 14px;">BTS World Tour | Arirang</div>
+                        <div style="font-size: 12px; color: var(--text-gray);">São Paulo, Brasil</div>
+                    </div>
+                </div>
+
+                <div class="details-section">
+                    <div class="label-small">TITULAR DO INGRESSO</div>
+                    <div id="nomeTitular" class="name-display">Carregando nome...</div>
+
+                    <div class="label-small">LOCAL / PORTÃO</div>
+                    <div class="location-highlight">MorumBIS - Portão Principal</div>
+
+                    <div class="info-grid">
+                        <div class="info-col">
+                            <div class="label-small">DATA DE PAGAMENTO</div>
+                            <div id="dataPagamento" class="info-value">-- --- ----</div>
+                        </div>
+                        <div class="info-col">
+                            <div class="label-small">ABERTURA</div>
+                            <div class="info-value">16:00</div>
+                        </div>
+                        <div class="info-col">
+                            <div class="label-small">INÍCIO</div>
+                            <div class="info-value">20:00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alerts-container">
+            <div class="alert-item">
+                <strong>Horário de Chegada</strong>
+                Recomendamos chegar com 2 horas de antecedência para evitar filas no MorumBIS.
+            </div>
+            <div class="alert-item">
+                <strong>Documentação Obrigatória</strong>
+                Apresente este ingresso e um documento oficial com foto (RG, CNH ou Passaporte).
+            </div>
+            <div class="alert-item" style="border-left-color: #ffcc00;">
+                <strong>Segurança do QR Code</strong>
+                Seu ingresso é único. Não compartilhe fotos dele para evitar clonagens.
+            </div>
+        </div>
+
+        <button class="btn-download" onclick="gerarPDF()">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Salvar Ingresso em PDF
+        </button>
+
+    </div>
+
+    <script>
+        // 1. Preenche o nome vindo da URL (?nome=Fulano) e a data de hoje
+        function inicializarPagina() {
+            // Lógica do Nome
+            const params = new URLSearchParams(window.location.search);
+            const nome = params.get('nome');
+            const elNome = document.getElementById('nomeTitular');
+            
+            if (nome) {
+                elNome.innerText = decodeURIComponent(nome);
+            } else {
+                elNome.innerText = "CLIENTE TICKETMASTER";
+            }
+
+            // Lógica da Data Atualizada
+            const elData = document.getElementById('dataPagamento');
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const meses = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+            const mes = meses[hoje.getMonth()];
+            const ano = hoje.getFullYear();
+
+            elData.innerText = `${dia} ${mes} ${ano}`;
+        }
+
+        // 2. Função para Gerar o PDF
+        function gerarPDF() {
+            const element = document.getElementById('ticket-capture-area');
+            const btn = document.querySelector('.btn-download');
+            
+            const opt = {
+                margin: 10,
+                filename: 'ingresso-bts-world-tours2026.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 3, 
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            btn.innerText = "Processando arquivo...";
+            btn.style.opacity = "0.7";
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Salvar Ingresso em PDF`;
+                btn.style.opacity = "1";
+            });
+        }
+
+        // Chama a função ao carregar
+        window.onload = inicializarPagina;
+    </script>
+
+</body>
+</html>
